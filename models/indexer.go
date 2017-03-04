@@ -8,8 +8,6 @@ import (
 )
 
 func IndexAllFiles(dirName string) error {
-	test := "1"
-	fmt.Print(test)
 	absPath, _ := filepath.Abs(dirName)
 	curDir, err := ioutil.ReadDir(absPath)
 	if err != nil {
