@@ -1,13 +1,15 @@
 package models
 
 import (
-	"io/ioutil"
 	"fmt"
-	"path/filepath"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 func IndexAllFiles(dirName string) error {
+	test := "1"
+	fmt.Print(test)
 	absPath, _ := filepath.Abs(dirName)
 	curDir, err := ioutil.ReadDir(absPath)
 	if err != nil {

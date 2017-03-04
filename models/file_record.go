@@ -5,11 +5,7 @@ import (
 )
 
 type FileRecord struct {
-	Path string
+	Path        string
 	CreatedTime time.Time
 	UpdatedTime time.Time
 }
-
-
-
-
