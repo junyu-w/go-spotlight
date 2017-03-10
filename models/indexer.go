@@ -5,7 +5,31 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"syscall"
+	"time"
 )
+
+var (
+	indexFileError string = "ERROR: failed to index file %s"
+)
+
+func statTimes(fi os.FileInfo) (atime, mtime, ctime time.Time, err error) {
+	mtime = fi.ModTime()
+	stat := fi.Sys().(*syscall.Stat_t)
+	atime = time.Unix(int64(stat.Atimespec.Sec), int64(stat.Atimespec.Nsec))
+	ctime = time.Unix(int64(stat.Ctimespec.Sec), int64(stat.Ctimespec.Nsec))
+	return
+}
+
+func indexFile(fi os.FileInfo, absPath string) {
+	atime, mtime, ctime, err := statTimes(fi)
+	if err != nil {
+		panic(fmt.Errorf(indexFileError, fi.Name()))
+
+	}
+	fr := NewFileRecord(absPath, fi.Name(), atime, mtime, ctime)
+	fmt.Println(fr.Name)
+}
 
 func IndexAllFiles(dirName string) error {
 	absPath, _ := filepath.Abs(dirName)
@@ -13,11 +37,14 @@ func IndexAllFiles(dirName string) error {
 	if err != nil {
 		return err
 	}
-	for _, f := range curDir {
-		fmt.Println(f.Name())
-		// TODO: get file stat
-		if isDir(f) {
-			IndexAllFiles(filepath.Join(absPath, f.Name()))
+	for _, fi := range curDir {
+		// TODO: aysnc index with gorouting
+		absFilePath := filepath.Join(absPath, fi.Name())
+		//fmt.Println(absFilePath)
+		if isDir(fi) {
+			IndexAllFiles(absFilePath)
+		} else {
+			indexFile(fi, absFilePath)
 		}
 	}
 	return nil
