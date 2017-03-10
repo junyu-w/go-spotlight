@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"syscall"
 	"time"
 )
@@ -34,6 +35,8 @@ func indexFile(fi os.FileInfo, absPath string) {
 }
 
 func IndexAllFiles(dirName string) error {
+	extensionRegex := regexp.MustCompile(allowedExtension)
+
 	absPath, _ := filepath.Abs(dirName)
 	curDir, err := ioutil.ReadDir(absPath)
 	if err != nil {
@@ -42,11 +45,12 @@ func IndexAllFiles(dirName string) error {
 	for _, fi := range curDir {
 		// TODO: aysnc index with gorouting
 		absFilePath := filepath.Join(absPath, fi.Name())
-		//fmt.Println(absFilePath)
 		if isDir(fi) {
 			IndexAllFiles(absFilePath)
 		} else {
-			indexFile(fi, absFilePath)
+			if extensionRegex.MatchString(filepath.Ext(fi.Name())) {
+				indexFile(fi, absFilePath)
+			}
 		}
 	}
 	return nil
@@ -59,7 +63,7 @@ func isDir(fi os.FileInfo) bool {
 	case mode.IsRegular():
 		return false
 	default:
-		return false
+		return true
 	}
 }
 

@@ -8,6 +8,8 @@ import (
 
 const (
 	initReadLength int64 = 500 // read last 500 bytes
+
+	allowedExtension string = "(txt|docx|doc|xls|csv|pdf|pages)"
 )
 
 type FileRecord struct {
@@ -31,7 +33,10 @@ func (fr *FileRecord) ReadAt(p []byte, off int64) (int, error) {
 }
 
 func NewFileRecord(absPath string, fName string, atime, mtime, ctime time.Time, size int64) *FileRecord {
-	lastIndexPosition := size - (initReadLength % size)
+	var lastIndexPosition int64 = 0
+	if size > initReadLength {
+		lastIndexPosition = size - initReadLength
+	}
 	fr := &FileRecord{
 		Path:              absPath,
 		Name:              fName,
@@ -41,12 +46,12 @@ func NewFileRecord(absPath string, fName string, atime, mtime, ctime time.Time, 
 		ChangeTime:        ctime,
 		LastIndexPosition: lastIndexPosition,
 	}
-	fr.initRecentWords()
+	fr.initRecentWords(int(size - lastIndexPosition))
 	return fr
 }
 
-func (fr *FileRecord) initRecentWords() {
-	buffer := make([]byte, initReadLength, initReadLength)
+func (fr *FileRecord) initRecentWords(bufSize int) {
+	buffer := make([]byte, bufSize, bufSize)
 	l, err := fr.ReadAt(buffer, fr.LastIndexPosition)
 	if err != nil && err.Error() != "EOF" {
 		panic(err)

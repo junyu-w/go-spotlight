@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	models.IndexAllFiles("./")
+	models.IndexAllFiles("../../../../../../")
 }
