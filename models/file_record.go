@@ -2,6 +2,7 @@ package models
 
 import (
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -12,6 +13,7 @@ const (
 type FileRecord struct {
 	Path              string
 	Name              string
+	Extension         string
 	AccessTime        time.Time
 	ModifyTime        time.Time // content was modified
 	ChangeTime        time.Time
@@ -24,15 +26,16 @@ func (fr *FileRecord) ReadAt(p []byte, off int64) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	defer f.Close()
 	return f.ReadAt(p, off)
 }
 
-func NewFileRecord(absPath string, fName string, atime, mtime, ctime time.Time) *FileRecord {
-	fi, _ := os.Stat(absPath)
-	lastIndexPosition := fi.Size() - (initReadLength % fi.Size())
+func NewFileRecord(absPath string, fName string, atime, mtime, ctime time.Time, size int64) *FileRecord {
+	lastIndexPosition := size - (initReadLength % size)
 	fr := &FileRecord{
 		Path:              absPath,
 		Name:              fName,
+		Extension:         filepath.Ext(fName),
 		AccessTime:        atime,
 		ModifyTime:        mtime,
 		ChangeTime:        ctime,
