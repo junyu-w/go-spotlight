@@ -19,7 +19,7 @@ type FileRecord struct {
 	AccessTime        time.Time
 	ModifyTime        time.Time // content was modified
 	ChangeTime        time.Time
-	RecentWords       string
+	RecentContent     string
 	LastIndexPosition int64
 }
 
@@ -46,16 +46,20 @@ func NewFileRecord(absPath string, fName string, atime, mtime, ctime time.Time, 
 		ChangeTime:        ctime,
 		LastIndexPosition: lastIndexPosition,
 	}
-	fr.initRecentWords(int(size - lastIndexPosition))
+	fr.initRecentContent(int(size - lastIndexPosition))
 	return fr
 }
 
-func (fr *FileRecord) initRecentWords(bufSize int) {
+func (fr *FileRecord) initRecentContent(bufSize int) {
 	buffer := make([]byte, bufSize, bufSize)
 	l, err := fr.ReadAt(buffer, fr.LastIndexPosition)
 	if err != nil && err.Error() != "EOF" {
 		panic(err)
 	}
-	fr.RecentWords = string(buffer)
+	fr.RecentContent = string(buffer)
 	fr.LastIndexPosition += int64(l)
+}
+
+func getSortableTimeFormat(t time.Time) string {
+	return t.Format(time.RFC3339)
 }

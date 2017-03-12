@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/blevesearch/bleve"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -24,7 +25,7 @@ func statTimes(fi os.FileInfo) (atime, mtime, ctime time.Time, err error) {
 	return
 }
 
-func indexFile(fi os.FileInfo, absPath string) {
+func indexFile(fi os.FileInfo, absPath string, fr_idx *bleve.Index) {
 	atime, mtime, ctime, err := statTimes(fi)
 	if err != nil {
 		panic(fmt.Errorf(indexFileError, fi.Name()))
@@ -32,11 +33,11 @@ func indexFile(fi os.FileInfo, absPath string) {
 	}
 	fr := NewFileRecord(absPath, fi.Name(), atime, mtime, ctime, fi.Size())
 	fmt.Println(fr.Name, fr.ModifyTime.Format(time.RFC3339))
+	(*fr_idx).Index(fr.Path, fr)
 }
 
-func IndexAllFiles(dirName string) error {
+func IndexAllFiles(dirName string, fr_index *bleve.Index) error {
 	extensionRegex := regexp.MustCompile(allowedExtension)
-
 	absPath, _ := filepath.Abs(dirName)
 	curDir, err := ioutil.ReadDir(absPath)
 	if err != nil {
@@ -46,10 +47,10 @@ func IndexAllFiles(dirName string) error {
 		// TODO: aysnc index with gorouting
 		absFilePath := filepath.Join(absPath, fi.Name())
 		if isDir(fi) {
-			IndexAllFiles(absFilePath)
+			IndexAllFiles(absFilePath, fr_index)
 		} else {
 			if extensionRegex.MatchString(filepath.Ext(fi.Name())) {
-				indexFile(fi, absFilePath)
+				indexFile(fi, absFilePath, fr_index)
 			}
 		}
 	}
@@ -65,10 +66,4 @@ func isDir(fi os.FileInfo) bool {
 	default:
 		return true
 	}
-}
-
-// ############### DB ####################
-
-func getSortableTimeFormat(t time.Time) string {
-	return t.Format(time.RFC3339)
 }
