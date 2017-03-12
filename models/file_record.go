@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	initReadLength int64 = 500 // read last 500 bytes
+	initReadLength int64 = 200 // read last 500 bytes
 
 	allowedExtension string = "(txt|docx|doc|xls|csv|pdf|pages)"
 )
