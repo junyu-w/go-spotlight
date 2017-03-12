@@ -16,6 +16,7 @@ func compileQuery(timeRange, fileExtension, hint string) *query.ConjunctionQuery
 }
 
 func parseTimeRange(t string) (time.Time, time.Time) {
+	// TODO: finish this
 	start, _ := time.Parse(time.RFC3339, "2017-01-02T15:04:05Z07:00")
 	end, _ := time.Parse(time.RFC3339, "2017-03-11T15:04:05Z07:00")
 	return start, end

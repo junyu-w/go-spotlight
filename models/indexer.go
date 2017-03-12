@@ -33,6 +33,7 @@ func indexFile(fi os.FileInfo, absPath string, fr_idx *bleve.Index) {
 	}
 	fr := NewFileRecord(absPath, fi.Name(), atime, mtime, ctime, fi.Size())
 	fmt.Println(fr.Name, fr.ModifyTime.Format(time.RFC3339))
+	// TODO: use batch index
 	(*fr_idx).Index(fr.Path, fr)
 }
 
