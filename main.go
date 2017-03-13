@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/DrakeW/FileDB/client"
+	"github.com/DrakeW/fileDB/client"
 	"os"
 )
 

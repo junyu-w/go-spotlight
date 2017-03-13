@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"github.com/DrakeW/FileDB/models"
+	"github.com/DrakeW/fileDB/models"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/search/query"
 	"github.com/urfave/cli"
