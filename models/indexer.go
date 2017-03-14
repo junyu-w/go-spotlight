@@ -15,7 +15,7 @@ var (
 	indexFileError string = "ERROR: failed to index file %s"
 )
 
-// ##################### FILE ########################
+// ##################### Manual Indexing ########################
 
 func statTimes(fi os.FileInfo) (atime, mtime, ctime time.Time, err error) {
 	mtime = fi.ModTime()
@@ -68,3 +68,11 @@ func isDir(fi os.FileInfo) bool {
 		return true
 	}
 }
+
+// ###################### Record keeping ###############################
+
+// TODO: record currently indexed directories into json file check before making new index
+
+// ###################### On-demand indexing #############################
+
+// TODO: make new index after checking the record
