@@ -59,7 +59,3 @@ func (fr *FileRecord) initRecentContent(bufSize int) {
 	fr.RecentContent = string(buffer)
 	fr.LastIndexPosition += int64(l)
 }
-
-func getSortableTimeFormat(t time.Time) string {
-	return t.Format(time.RFC3339)
-}

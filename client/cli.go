@@ -27,8 +27,8 @@ func GetCliApp() *cli.App {
 			Action:  executeIndexCommand,
 		},
 		{
-			Name:    "query",
-			Aliases: []string{"q"},
+			Name:    "strictquery",
+			Aliases: []string{"sq"},
 			Usage:   "Search for files according to query input",
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -37,22 +37,22 @@ func GetCliApp() *cli.App {
 					Usage: "searching for file 'name' or file 'path'",
 				}, cli.StringFlag{
 					Name:  "time, t",
-					Value: "-1d~0d",
-					Usage: "date range for your search",
+					Value: "",
+					Usage: "date range for your search, eg. -3~0 means last 3 days",
 				}, cli.StringFlag{
 					Name:  "extension, ext",
-					Value: "_all",
+					Value: "",
 					Usage: "file extension to limit search ranges",
 				}, cli.StringFlag{
-					Name:  "hint",
-					Value: "_None",
-					Usage: "Enter any word you remember that you typed in this file, it can be inaccurate and fuzzy",
+					Name:  "words, w",
+					Value: "",
+					Usage: "Enter words you remember that you typed in this file",
 				},
 			},
 			Action: executeStrictQuery,
 		}, {
-			Name:    "fuzzyQuery",
-			Aliases: []string{"fq"},
+			Name:    "fuzzyquery",
+			Aliases: []string{"q"},
 			Usage:   "just dump whatever in your mind to the query",
 			Action:  executeFuzzyQuery,
 		},
@@ -75,11 +75,13 @@ func executeIndexCommand(c *cli.Context) error {
 }
 
 func executeStrictQuery(c *cli.Context) error {
-	//keyword := c.String("keyword")
 	timeRange := c.String("time")
 	fileExtension := c.String("extension")
-	hint := c.String("hint")
-
+	hint := c.String("words")
+	if timeRange == "" || fileExtension == "" || hint == "" {
+		fmt.Println("Please check help with \"fdb help sq\"")
+		return nil
+	}
 	query := compileQuery(timeRange, fileExtension, hint)
 	fr_index := models.GetFrIndex()
 	defer fr_index.Close()
