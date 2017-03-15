@@ -3,6 +3,8 @@ package models
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -53,16 +55,24 @@ func (ir *IndexRecord) SaveToJson() error {
 	return nil
 }
 
-// TODO: finish index validity checking
-
-func (ir *IndexRecord) DirHasValidIndex(dir string) bool {
-	return ir.dirAlreadyIndexed(dir) && ir.dirIndexIsRecent(dir)
-}
-
-func (ir *IndexRecord) dirAlreadyIndexed(dir string) bool {
-	return false
-}
-
-func (ir *IndexRecord) dirIndexIsRecent(dir string) bool {
-	return false
+func (ir *IndexRecord) DirHasValidIndex(path string) bool {
+	dirList := strings.Split("/", path)
+	// check if path is ever indexed (by itself or parent dirs)
+	var indexPath string = ""
+	for i := 0; i < len(dirList); i++ {
+		temp := filepath.Join(dirList[:i]...)
+		if _, ok := ir.indexRecord[temp]; ok {
+			indexPath = temp
+			break
+		}
+	}
+	if indexPath == "" {
+		return false
+	}
+	// check if index is young enough (indexed less than 6 hours ago)
+	interval := time.Now().Sub(ir.timeRecord[indexPath])
+	if interval >= 6*60*time.Minute {
+		return false
+	}
+	return true
 }
