@@ -68,11 +68,3 @@ func isDir(fi os.FileInfo) bool {
 		return true
 	}
 }
-
-// ###################### Record keeping ###############################
-
-// TODO: record currently indexed directories into json file check before making new index
-
-// ###################### On-demand indexing #############################
-
-// TODO: make new index after checking the record

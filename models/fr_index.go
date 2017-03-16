@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
-	"os"
+	"strings"
 )
 
-const IndexName string = "file_db.bleve"
+const IndexDir string = "/Users/junyuwang/Desktop/fdb_idx/"
 
-func newFrIndex() bleve.Index {
+func newFrIndex(idxName string) bleve.Index {
 	idxMapping := frIndexMapping()
-	fr_idx, err := bleve.New(IndexName, idxMapping)
+	fr_idx, err := bleve.New(getIndexPath(idxName), idxMapping)
 	if err != nil {
 		panic(err)
 	}
@@ -43,18 +43,36 @@ func frIndexMapping() *mapping.IndexMappingImpl {
 	return frIndexMapping
 }
 
-func GetFrIndex() bleve.Index {
-	var fr_index bleve.Index
-	if _, err := os.Stat(IndexName); os.IsNotExist(err) {
-		fmt.Println("creating new index...")
-		fr_index = newFrIndex()
+func getIndexName(dir string) string {
+	idxName := strings.Join(strings.Split(dir, "/"), "_") + ".bleve"
+	return idxName
+}
 
+func getIndexPath(idxName string) string {
+	return IndexDir + idxName
+}
+
+func GetFrIndex(cwd string) (bleve.Index, error) {
+	// get idx name
+	var fr_index bleve.Index
+	idxName := getIndexName(cwd)
+	// check idx record
+	idxRecord, err := GetIndexRecord()
+	if err != nil {
+		panic(err)
+		return nil, err
+	}
+	if !idxRecord.DirHasValidIndex(cwd) {
+		fmt.Println("creating new index...")
+		fr_index = newFrIndex(idxName)
+		idxRecord.AddIndex(idxName)
+		idxRecord.SaveToJson()
 	} else {
 		fmt.Println("querying existed index...")
-		fr_index, err = bleve.Open(IndexName)
+		fr_index, err = bleve.Open(IndexDir + idxName)
 		if err != nil {
 			panic(err)
 		}
 	}
-	return fr_index
+	return fr_index, nil
 }

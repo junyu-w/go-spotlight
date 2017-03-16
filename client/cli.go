@@ -6,6 +6,8 @@ import (
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/search/query"
 	"github.com/urfave/cli"
+	"os"
+	"path/filepath"
 )
 
 // sample search: "fdb -k name -t -2d~0d -ext txt --hint "hello world good desk"
@@ -68,13 +70,26 @@ func executeIndexCommand(c *cli.Context) error {
 	} else {
 		dir = "./"
 	}
-	fr_index := models.GetFrIndex()
+
+	absPath, _ := filepath.Abs(dir)
+	fr_index, err := models.GetFrIndex(absPath)
+	if err != nil {
+		return err
+	}
 	defer fr_index.Close()
+
 	models.IndexAllFiles(dir, &fr_index)
 	return nil
 }
 
 func executeStrictQuery(c *cli.Context) error {
+	curDir, _ := os.Getwd()
+	fr_index, err := models.GetFrIndex(curDir)
+	if err != nil {
+		return err
+	}
+	defer fr_index.Close()
+
 	timeRange := c.String("time")
 	fileExtension := c.String("extension")
 	hint := c.String("words")
@@ -83,8 +98,7 @@ func executeStrictQuery(c *cli.Context) error {
 		return nil
 	}
 	query := compileQuery(timeRange, fileExtension, hint)
-	fr_index := models.GetFrIndex()
-	defer fr_index.Close()
+
 	searchRequest := bleve.NewSearchRequest(query)
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
@@ -96,7 +110,11 @@ func executeStrictQuery(c *cli.Context) error {
 }
 
 func executeFuzzyQuery(c *cli.Context) error {
-	fr_index := models.GetFrIndex()
+	curDir, _ := os.Getwd()
+	fr_index, err := models.GetFrIndex(curDir)
+	if err != nil {
+		return err
+	}
 	defer fr_index.Close()
 
 	queries := make([]query.Query, c.NArg(), c.NArg())
