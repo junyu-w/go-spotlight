@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"syscall"
 	"time"
 )
@@ -32,13 +31,11 @@ func indexFile(fi os.FileInfo, absPath string, fr_idx *bleve.Index) {
 
 	}
 	fr := NewFileRecord(absPath, fi.Name(), atime, mtime, ctime, fi.Size())
-	fmt.Println(fr.Name, fr.ModifyTime.Format(time.RFC3339))
 	// TODO: use batch index
 	(*fr_idx).Index(fr.Path, fr)
 }
 
 func IndexAllFiles(dirName string, fr_index *bleve.Index) error {
-	extensionRegex := regexp.MustCompile(allowedExtension)
 	absPath, _ := filepath.Abs(dirName)
 	curDir, err := ioutil.ReadDir(absPath)
 	if err != nil {
@@ -50,9 +47,7 @@ func IndexAllFiles(dirName string, fr_index *bleve.Index) error {
 		if isDir(fi) {
 			IndexAllFiles(absFilePath, fr_index)
 		} else {
-			if extensionRegex.MatchString(filepath.Ext(fi.Name())) {
-				indexFile(fi, absFilePath, fr_index)
-			}
+			indexFile(fi, absFilePath, fr_index)
 		}
 	}
 	return nil

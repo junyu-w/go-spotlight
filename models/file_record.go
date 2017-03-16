@@ -8,8 +8,6 @@ import (
 
 const (
 	initReadLength int64 = 200 // read last 500 bytes
-
-	allowedExtension string = "(txt|docx|doc|xls|csv|pdf|pages)"
 )
 
 type FileRecord struct {
@@ -46,7 +44,7 @@ func NewFileRecord(absPath string, fName string, atime, mtime, ctime time.Time, 
 		ChangeTime:        ctime,
 		LastIndexPosition: lastIndexPosition,
 	}
-	fr.initRecentContent(int(size - lastIndexPosition))
+	//fr.initRecentContent(int(size - lastIndexPosition))
 	return fr
 }
 

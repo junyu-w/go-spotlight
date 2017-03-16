@@ -11,7 +11,6 @@ import (
 
 const (
 	MetaJsonPath string = IndexDir + "fdb_meta.json"
-	IndexLimit   int    = 10
 )
 
 type IndexRecord map[string]string //`json:"index_record"`
