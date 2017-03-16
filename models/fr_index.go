@@ -53,23 +53,25 @@ func getIndexPath(idxName string) string {
 }
 
 func GetFrIndex(cwd string) (bleve.Index, error) {
-	// get idx name
 	var fr_index bleve.Index
-	idxName := getIndexName(cwd)
 	// check idx record
 	idxRecord, err := GetIndexRecord()
 	if err != nil {
 		panic(err)
 		return nil, err
 	}
-	if !idxRecord.DirHasValidIndex(cwd) {
+	if index, valid := idxRecord.DirHasValidIndex(cwd); valid == false {
 		fmt.Println("creating new index...")
+		if index != "" {
+			idxRecord.RemoveIndex(cwd)
+		}
+		idxName := getIndexName(cwd)
 		fr_index = newFrIndex(idxName)
 		idxRecord.AddIndex(idxName)
 		idxRecord.SaveToJson()
 	} else {
 		fmt.Println("querying existed index...")
-		fr_index, err = bleve.Open(IndexDir + idxName)
+		fr_index, err = bleve.Open(IndexDir + index)
 		if err != nil {
 			panic(err)
 		}

@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -59,25 +60,41 @@ func (ir IndexRecord) SaveToJson() error {
 	return nil
 }
 
-func (ir IndexRecord) DirHasValidIndex(path string) bool {
+// check if dir or any parent dir was indexed
+func (ir IndexRecord) GetUsableIndex(path string) string {
 	dirList := strings.Split(path, "/")
-	// check if path is ever indexed (by itself or parent dirs)
-	var indexPath string = ""
+	var indexName string = ""
 	for i := 0; i <= len(dirList); i++ {
 		temp := getIndexName(strings.Join(dirList[:i], "/"))
 		if _, ok := ir[temp]; ok {
-			indexPath = temp
+			indexName = temp
 			break
 		}
 	}
-	if indexPath == "" {
-		return false
+	return indexName
+}
+
+func (ir IndexRecord) DirHasValidIndex(path string) (string, bool) {
+	// check if path is ever indexed (by itself or parent dirs)
+	indexName := ir.GetUsableIndex(path)
+	if indexName == "" {
+		return indexName, false
 	}
 	// check if index is young enough (indexed less than 6 hours ago)
-	indexTime, _ := time.Parse(time.RFC3339, ir[indexPath])
+	indexTime, _ := time.Parse(time.RFC3339, ir[indexName])
 	interval := time.Now().Sub(indexTime)
 	if interval >= 6*60*time.Minute {
-		return false
+		return indexName, false
 	}
-	return true
+	return indexName, true
+}
+
+func (ir IndexRecord) RemoveIndex(indexName string) error {
+	fmt.Println("cleaning old index...")
+	err := os.RemoveAll(IndexDir + indexName)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
