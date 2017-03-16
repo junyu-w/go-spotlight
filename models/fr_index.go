@@ -4,10 +4,19 @@ import (
 	"fmt"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
+	"os/user"
 	"strings"
 )
 
-const IndexDir string = "/Users/junyuwang/Desktop/fdb_idx/"
+var IndexDir string = getHomeDir() + "/.fdb_idx/"
+
+func getHomeDir() string {
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	return user.HomeDir
+}
 
 func newFrIndex(idxName string) bleve.Index {
 	idxMapping := frIndexMapping()

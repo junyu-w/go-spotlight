@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const (
+var (
 	MetaJsonPath string = IndexDir + "fdb_meta.json"
 )
 
