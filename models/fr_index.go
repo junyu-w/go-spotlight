@@ -67,6 +67,8 @@ func GetFrIndex(cwd string) (bleve.Index, error) {
 		}
 		idxName := getIndexName(cwd)
 		fr_index = newFrIndex(idxName)
+		// index files inside cwd
+		IndexAllFiles(cwd, &fr_index)
 		idxRecord.AddIndex(idxName)
 		idxRecord.SaveToJson()
 	} else {
