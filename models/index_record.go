@@ -26,7 +26,8 @@ func (ir IndexRecord) AddIndex(idx string) {
 func GetIndexRecord() (IndexRecord, error) {
 	if _, err := os.Stat(MetaJsonPath); os.IsNotExist(err) {
 		errDir := os.Mkdir(IndexDir, 0700)
-		_, errFile := os.Create(MetaJsonPath)
+		f, errFile := os.Create(MetaJsonPath)
+		defer f.Close()
 		idxRecord := NewIndexRecord()
 		if errDir != nil || errFile != nil {
 			return nil, err
