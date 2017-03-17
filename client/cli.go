@@ -74,11 +74,11 @@ func executeStrictQuery(c *cli.Context) error {
 	query := compileQuery(timeRange, fileExtension, hint)
 
 	searchRequest := bleve.NewSearchRequest(query)
+	searchRequest.Highlight = bleve.NewHighlightWithStyle("ansi")
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
 		return err
 	}
-	// TODO: ansi highlighter is not registered
 	fmt.Println(searchResult)
 	return nil
 }
