@@ -81,7 +81,7 @@ func GetFrIndex(cwd string) (bleve.Index, error) {
 		idxRecord.AddIndex(idxName)
 		idxRecord.SaveToJson()
 	} else {
-		fmt.Println("querying existed index...")
+		fmt.Println("using existed index...")
 		fr_index, err = bleve.Open(IndexDir + index)
 		if err != nil {
 			panic(err)
