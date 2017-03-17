@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/DrakeW/fileDB/models"
 	"github.com/blevesearch/bleve"
+	_ "github.com/blevesearch/bleve/config"
 	"github.com/blevesearch/bleve/search/query"
 	"github.com/urfave/cli"
 	"os"
@@ -97,6 +98,7 @@ func executeFuzzyQuery(c *cli.Context) error {
 	conjQuery := bleve.NewConjunctionQuery(queries...)
 
 	searchRequest := bleve.NewSearchRequest(conjQuery)
+	searchRequest.Highlight = bleve.NewHighlightWithStyle("ansi")
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
 		return err
