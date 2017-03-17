@@ -7,7 +7,6 @@ import (
 	"github.com/blevesearch/bleve/search/query"
 	"github.com/urfave/cli"
 	"os"
-	"path/filepath"
 )
 
 // sample search: "fdb -k name -t -2d~0d -ext txt --hint "hello world good desk"
@@ -22,12 +21,6 @@ func GetCliApp() *cli.App {
 	}
 
 	app.Commands = []cli.Command{
-		{
-			Name:    "index",
-			Aliases: []string{"i"},
-			Usage:   "Index files under specified directory recrusively",
-			Action:  executeIndexCommand,
-		},
 		{
 			Name:    "strictquery",
 			Aliases: []string{"sq"},
@@ -60,26 +53,6 @@ func GetCliApp() *cli.App {
 		},
 	}
 	return app
-}
-
-func executeIndexCommand(c *cli.Context) error {
-	args := c.Args()
-	var dir string
-	if len(args) > 0 {
-		dir = args[0]
-	} else {
-		dir = "./"
-	}
-
-	absPath, _ := filepath.Abs(dir)
-	fr_index, err := models.GetFrIndex(absPath)
-	if err != nil {
-		return err
-	}
-	defer fr_index.Close()
-
-	models.StartIndexing(dir, fr_index)
-	return nil
 }
 
 func executeStrictQuery(c *cli.Context) error {

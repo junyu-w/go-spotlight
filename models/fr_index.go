@@ -77,9 +77,11 @@ func GetFrIndex(cwd string) (bleve.Index, error) {
 		fmt.Println("creating new index...")
 		fr_index = newFrIndex(idxName)
 		// index files inside cwd
-		StartIndexing(cwd, fr_index)
 		idxRecord.AddIndex(idxName)
 		idxRecord.SaveToJson()
+		doneChan := make(chan bool)
+		StartIndexing(cwd, fr_index, doneChan)
+		<-doneChan
 	} else {
 		fmt.Println("using existed index...")
 		fr_index, err = bleve.Open(IndexDir + index)
