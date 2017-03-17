@@ -2,7 +2,7 @@
 
 ### Introduction
 
-If you have issue with remembering things, then fileDB is your friend to help. fileDB is a command-line file search engine that does automatic indexing, and supports quries in different format. (Disclaimer: fileDB is actually not a DB, call it a DB because I'm too lazy to make it a service)
+fileDB is a command-line file search engine that does automatic indexing, and supports quries in different format. (Disclaimer: fileDB is actually not a DB, call it a DB because I'm too lazy to make it a service)
 
 And thanks to the power of *Bleve*, fileDB does query analysis before execution, such that the query term you input need not be super accurate (eg. water = watering = watered)
 
@@ -32,4 +32,4 @@ More information can be found by running `fdb help` or `fdb help <command>`
 
 ### Note
 
-Since `fdb` recursively indexes the directory where you execute the command, make sure you are not at *root* or any directory that contain more than 10k files (it can still work, but indexing them takes about 30ish seconds)
+Since `fdb` recursively indexes file information including part of the file content into the index, it takes about 1 second to index 1000 files. Therefore be cautious when you try to index a directory with lots of files. (But the search will be always fast after the indexing phase)

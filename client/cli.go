@@ -78,7 +78,7 @@ func executeIndexCommand(c *cli.Context) error {
 	}
 	defer fr_index.Close()
 
-	models.IndexAllFiles(dir, &fr_index)
+	models.StartIndexing(dir, fr_index)
 	return nil
 }
 
