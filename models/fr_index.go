@@ -70,14 +70,14 @@ func GetFrIndex(cwd string) (bleve.Index, error) {
 		return nil, err
 	}
 	if index, valid := idxRecord.DirHasValidIndex(cwd); valid == false {
-		fmt.Println("creating new index...")
-		if index != "" {
-			idxRecord.RemoveIndex(cwd)
-		}
 		idxName := getIndexName(cwd)
+		if index != "" {
+			idxRecord.RemoveIndex(idxName)
+		}
+		fmt.Println("creating new index...")
 		fr_index = newFrIndex(idxName)
 		// index files inside cwd
-		IndexAllFiles(cwd, &fr_index)
+		StartIndexing(cwd, fr_index)
 		idxRecord.AddIndex(idxName)
 		idxRecord.SaveToJson()
 	} else {

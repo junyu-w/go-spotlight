@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const BATCH_SIZE int = 1000
+
 var (
 	indexFileError string = "ERROR: failed to index file %s"
 )
@@ -24,18 +26,53 @@ func statTimes(fi os.FileInfo) (atime, mtime, ctime time.Time, err error) {
 	return
 }
 
-func indexFile(fi os.FileInfo, absPath string, fr_idx *bleve.Index) {
+func StartIndexing(dirName string, fr_index bleve.Index) {
+	quitChan := make(chan bool)
+	frChan := make(chan *FileRecord)
+	go func(fr_index bleve.Index, frChan chan *FileRecord, quitChan chan bool) {
+		batch := fr_index.NewBatch()
+		batchCount := 0
+		for {
+			select {
+			case fr := <-frChan:
+				batch.Index(fr.Path, fr)
+				batchCount++
+				if batchCount >= BATCH_SIZE {
+					fmt.Println("Indexed ", BATCH_SIZE, " files")
+					err := fr_index.Batch(batch)
+					if err != nil {
+						panic(err)
+					}
+					batch = fr_index.NewBatch()
+					batchCount = 0
+				}
+			case quitSignal := <-quitChan:
+				if quitSignal {
+					fmt.Println("Indexed ", batch.Size(), " files")
+					// index last batch then quit
+					err := fr_index.Batch(batch)
+					if err != nil {
+						panic(err)
+					}
+					return
+				}
+			}
+		}
+	}(fr_index, frChan, quitChan)
+	IndexAllFiles(dirName, frChan)
+	quitChan <- true
+}
+
+func enqueFile(fi os.FileInfo, absPath string, bufferChan chan *FileRecord) {
 	atime, mtime, ctime, err := statTimes(fi)
 	if err != nil {
 		panic(fmt.Errorf(indexFileError, fi.Name()))
-
 	}
 	fr := NewFileRecord(absPath, fi.Name(), atime, mtime, ctime, fi.Size())
-	// TODO: use batch index
-	(*fr_idx).Index(fr.Path, fr)
+	bufferChan <- fr
 }
 
-func IndexAllFiles(dirName string, fr_index *bleve.Index) error {
+func IndexAllFiles(dirName string, bufferChan chan *FileRecord) error {
 	absPath, _ := filepath.Abs(dirName)
 	curDir, err := ioutil.ReadDir(absPath)
 	if err != nil {
@@ -45,9 +82,9 @@ func IndexAllFiles(dirName string, fr_index *bleve.Index) error {
 		// TODO: aysnc index with gorouting
 		absFilePath := filepath.Join(absPath, fi.Name())
 		if isDir(fi) {
-			IndexAllFiles(absFilePath, fr_index)
+			IndexAllFiles(absFilePath, bufferChan)
 		} else {
-			indexFile(fi, absFilePath, fr_index)
+			enqueFile(fi, absFilePath, bufferChan)
 		}
 	}
 	return nil
