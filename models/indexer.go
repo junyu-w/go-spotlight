@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const BATCH_SIZE int = 1000
+const BATCH_SIZE int = 400
 
 var (
 	indexFileError string = "ERROR: failed to index file %s"
