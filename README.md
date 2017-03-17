@@ -2,9 +2,9 @@
 
 ### Introduction
 
-Go Spotlight is a command-line file search engine that does automatic indexing, and supports quries in different format. (Disclaimer: fileDB is actually not a DB, call it a DB because I'm too lazy to make it a service)
+Go Spotlight is a command-line file search engine that does automatic indexing, and supports quries in different format.
 
-And thanks to the power of *bleve*, fileDB does query analysis before execution, such that the query term you input need not be super accurate (eg. water = watering = watered)
+And thanks to the power of *bleve*, `gsp` does query analysis before execution, such that the query term you input need not be super accurate (eg. water = watering = watered)
 
 ### Install
 
