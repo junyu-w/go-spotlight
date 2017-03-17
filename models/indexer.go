@@ -16,8 +16,6 @@ var (
 	indexFileError string = "ERROR: failed to index file %s"
 )
 
-// ##################### Manual Indexing ########################
-
 func statTimes(fi os.FileInfo) (atime, mtime, ctime time.Time, err error) {
 	mtime = fi.ModTime()
 	stat := fi.Sys().(*syscall.Stat_t)
@@ -80,7 +78,6 @@ func IndexAllFiles(dirName string, bufferChan chan *FileRecord) error {
 		return err
 	}
 	for _, fi := range curDir {
-		// TODO: aysnc index with gorouting
 		absFilePath := filepath.Join(absPath, fi.Name())
 		if isDir(fi) {
 			IndexAllFiles(absFilePath, bufferChan)
