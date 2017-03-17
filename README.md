@@ -19,6 +19,7 @@ otherwise
 
 1. Download the binary release
 2. `cd` into the dir of the downloaded binary
+3. `chmod 700 ./fdb` to grant user right to execute program
 3. `ln -s $(pwd)/fdb /usr/local/bin/fdb`
 
 ### How to use
