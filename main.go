@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/DrakeW/fileDB/client"
+	"github.com/DrakeW/go-spotlight/client"
 	"os"
 )
 

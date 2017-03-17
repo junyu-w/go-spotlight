@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"github.com/DrakeW/fileDB/models"
+	"github.com/DrakeW/go-spotlight/models"
 	"github.com/blevesearch/bleve"
 	_ "github.com/blevesearch/bleve/config"
 	"github.com/blevesearch/bleve/search/query"
