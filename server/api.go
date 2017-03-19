@@ -27,6 +27,7 @@ func compileQuery(q string) query.Query {
 func runQuery(dir, queryStr string) (string, error) {
 	q := compileQuery(queryStr)
 	fr_index, err := models.GetFrIndex(dir)
+	defer fr_index.Close()
 	if err != nil {
 		return "", OpenIndexError
 	}
