@@ -56,7 +56,14 @@ func GetCliApp() *cli.App {
 			Name:    "server",
 			Aliases: []string{"s"},
 			Usage:   "run go-spotlight as a web application",
-			Action:  startServer,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "port, p",
+					Value: "8080",
+					Usage: "Specify which port to use",
+				},
+			},
+			Action: startServer,
 		},
 	}
 	return app
@@ -114,6 +121,6 @@ func executeFuzzyQuery(c *cli.Context) error {
 }
 
 func startServer(c *cli.Context) error {
-	server.StartServer()
+	server.StartServer(c.String("port"))
 	return nil
 }
