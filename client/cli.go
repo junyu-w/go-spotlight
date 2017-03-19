@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"github.com/DrakeW/go-spotlight/models"
+	"github.com/DrakeW/go-spotlight/server"
 	"github.com/blevesearch/bleve"
 	_ "github.com/blevesearch/bleve/config"
 	"github.com/blevesearch/bleve/search/query"
@@ -51,6 +52,11 @@ func GetCliApp() *cli.App {
 			Aliases: []string{"q"},
 			Usage:   "just dump whatever in your mind to the query",
 			Action:  executeFuzzyQuery,
+		}, {
+			Name:    "server",
+			Aliases: []string{"s"},
+			Usage:   "run go-spotlight as a web application",
+			Action:  startServer,
 		},
 	}
 	return app
@@ -104,5 +110,10 @@ func executeFuzzyQuery(c *cli.Context) error {
 		return err
 	}
 	fmt.Println(searchResult)
+	return nil
+}
+
+func startServer(c *cli.Context) error {
+	server.StartServer()
 	return nil
 }
