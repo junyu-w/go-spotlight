@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ func compileQuery(q string) query.Query {
 	return conjQuery
 }
 
-func runQuery(dir, queryStr string) (string, error) {
+func RunQuery(dir, queryStr string) (string, error) {
 	q := compileQuery(queryStr)
 	fr_index, err := models.GetFrIndex(dir)
 	defer fr_index.Close()

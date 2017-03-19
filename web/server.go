@@ -1,7 +1,9 @@
-package server
+package web
 
 import (
 	"fmt"
+	"github.com/DrakeW/go-spotlight/api"
+	"html/template"
 	"net/http"
 	"regexp"
 )
@@ -9,11 +11,25 @@ import (
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	dir := r.FormValue("dir")
 	queryTerms := r.FormValue("query")
-	res, err := runQuery(dir, queryTerms)
+	res, err := api.RunQuery(dir, queryTerms)
 	if err != nil {
 		http.Error(w, err.Error(), 501)
 	}
 	fmt.Fprintf(w, res)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "index")
+}
+
+// template caching
+var templates = template.Must(template.ParseFiles("web/index.html"))
+
+func renderTemplate(w http.ResponseWriter, tmpl string) {
+	err := templates.ExecuteTemplate(w, tmpl+".html", nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
@@ -28,9 +44,10 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 }
 
 // validation
-var validPath = regexp.MustCompile("^/(search)$")
+var validPath = regexp.MustCompile("^/(search|view)$")
 
 func StartServer(port string) {
+	http.HandleFunc("/view", makeHandler(handler))
 	http.HandleFunc("/search", makeHandler(searchHandler))
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }

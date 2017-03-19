@@ -3,7 +3,7 @@ package client
 import (
 	"fmt"
 	"github.com/DrakeW/go-spotlight/models"
-	"github.com/DrakeW/go-spotlight/server"
+	"github.com/DrakeW/go-spotlight/web"
 	"github.com/blevesearch/bleve"
 	_ "github.com/blevesearch/bleve/config"
 	"github.com/blevesearch/bleve/search/query"
@@ -121,6 +121,6 @@ func executeFuzzyQuery(c *cli.Context) error {
 }
 
 func startServer(c *cli.Context) error {
-	server.StartServer(c.String("port"))
+	web.StartServer(c.String("port"))
 	return nil
 }
