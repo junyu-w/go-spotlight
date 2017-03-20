@@ -27,7 +27,8 @@ func statTimes(fi os.FileInfo) (atime, mtime, ctime time.Time, err error) {
 func StartIndexing(dirName string, fr_index bleve.Index, doneChan chan bool) {
 	quitChan := make(chan bool)
 	frChan := make(chan *FileRecord)
-	go func(fr_index bleve.Index, frChan chan *FileRecord, quitChan chan bool, doneChan chan bool) {
+
+	go func(fr_index bleve.Index) {
 		batch := fr_index.NewBatch()
 		batchCount := 0
 		for {
@@ -57,7 +58,7 @@ func StartIndexing(dirName string, fr_index bleve.Index, doneChan chan bool) {
 				}
 			}
 		}
-	}(fr_index, frChan, quitChan, doneChan)
+	}(fr_index)
 	IndexAllFiles(dirName, frChan)
 	quitChan <- true
 }

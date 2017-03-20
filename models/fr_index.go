@@ -72,7 +72,7 @@ func GetFrIndex(cwd string) (bleve.Index, error) {
 	if index, valid := idxRecord.DirHasValidIndex(cwd); valid == false {
 		idxName := getIndexName(cwd)
 		if index != "" {
-			idxRecord.RemoveIndex(idxName)
+			idxRecord.RemoveIndex(index)
 		}
 		fmt.Println("creating new index...")
 		fr_index = newFrIndex(idxName)

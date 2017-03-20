@@ -95,5 +95,6 @@ func (ir IndexRecord) RemoveIndex(indexName string) error {
 		fmt.Println(err)
 		return err
 	}
+	delete(ir, indexName)
 	return nil
 }
