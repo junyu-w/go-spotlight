@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<title>Go Spotlight</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="./index.js"></script>
+	</head>
+	<body>
+		<button id="search-btn">Search</button>
+		<div id="search-result-box">
+			<ul class="search-result-list">
+			</ul>
+		</div>
+	</body>
+	<script>
+		$('#search-btn').click(function(event) {
+			$(document).ready(function() {
+				$.ajax({
+						url: '/search',
+						type: 'POST',
+						dataType: 'json',
+						data: {dir: './', query: 'test'},
+					})
+					.done(function(response) {
+						console.log(response)
+						update_search_result(response)
+						console.log("success");
+					})
+					.fail(function() {
+						console.log("error");
+					})
+			});
+		});
+
+		function update_search_result(res_json) {
+			let hits = res_json['hits']
+			let res_list = $('.search-result-list')
+			res_list.text("")
+			$.each(hits, function(index, val) {
+				var path = val['id']
+				var field = val['fragments']['RecentContent']
+				var res = `<li class='search-result'>
+							<div class='id'>${path}</div>
+							<div class='field'>${field}</div>
+						  </li>`
+				res_list.append(res)
+			});
+		}
+	</script>
+</html>
