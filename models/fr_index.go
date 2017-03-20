@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
 	"os/user"
@@ -74,7 +73,6 @@ func GetFrIndex(cwd string) (bleve.Index, error) {
 		if index != "" {
 			idxRecord.RemoveIndex(index)
 		}
-		fmt.Println("creating new index...")
 		fr_index = newFrIndex(idxName)
 		// index files inside cwd
 		idxRecord.AddIndex(idxName)
@@ -83,7 +81,6 @@ func GetFrIndex(cwd string) (bleve.Index, error) {
 		StartIndexing(cwd, fr_index, doneChan)
 		<-doneChan
 	} else {
-		fmt.Println("using existed index...")
 		fr_index, err = bleve.Open(IndexDir + index)
 		if err != nil {
 			panic(err)

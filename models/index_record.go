@@ -89,7 +89,7 @@ func (ir IndexRecord) DirHasValidIndex(path string) (string, bool) {
 }
 
 func (ir IndexRecord) RemoveIndex(indexName string) error {
-	fmt.Println("cleaning old index...")
+	//fmt.Println("cleaning old index...")
 	err := os.RemoveAll(IndexDir + indexName)
 	if err != nil {
 		fmt.Println(err)

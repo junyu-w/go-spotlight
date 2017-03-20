@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/blevesearch/bleve"
+	"github.com/cheggaaa/pb"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -28,16 +29,21 @@ func StartIndexing(dirName string, fr_index bleve.Index, doneChan chan bool) {
 	quitChan := make(chan bool)
 	frChan := make(chan *FileRecord)
 
+	progBar := pb.New(getNumFiles(dirName))
+	progBar.ShowCounters = true
+	progBar.SetWidth(80)
+	progBar.Start()
+
 	go func(fr_index bleve.Index) {
 		batch := fr_index.NewBatch()
 		batchCount := 0
 		for {
 			select {
 			case fr := <-frChan:
+				progBar.Increment()
 				batch.Index(fr.Path, fr)
 				batchCount++
 				if batchCount >= BATCH_SIZE {
-					fmt.Println("Indexed ", BATCH_SIZE, " files")
 					err := fr_index.Batch(batch)
 					if err != nil {
 						panic(err)
@@ -47,13 +53,13 @@ func StartIndexing(dirName string, fr_index bleve.Index, doneChan chan bool) {
 				}
 			case quitSignal := <-quitChan:
 				if quitSignal {
-					fmt.Println("Indexed ", batch.Size(), " files")
 					// index last batch then quit
 					err := fr_index.Batch(batch)
 					if err != nil {
 						panic(err)
 					}
 					doneChan <- true
+					progBar.FinishPrint("Finished Indexing!")
 					return
 				}
 			}
@@ -98,4 +104,15 @@ func isDir(fi os.FileInfo) bool {
 	default:
 		return true
 	}
+}
+
+func getNumFiles(dir string) int {
+	count := 0
+	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			count += 1
+		}
+		return err
+	})
+	return count
 }
