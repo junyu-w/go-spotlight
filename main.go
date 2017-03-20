@@ -17,5 +17,4 @@ func main() {
 	//	time.Sleep(time.Millisecond)
 	//}
 	//bar.FinishPrint("The End!")
-
 }

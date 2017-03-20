@@ -103,6 +103,6 @@ func executeFuzzyQuery(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(searchResult)
+	fmt.Println(formatSearchResult(searchResult))
 	return nil
 }

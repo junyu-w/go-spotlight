@@ -86,24 +86,13 @@ func IndexAllFiles(dirName string, bufferChan chan *FileRecord) error {
 	}
 	for _, fi := range curDir {
 		absFilePath := filepath.Join(absPath, fi.Name())
-		if isDir(fi) {
+		if fi.IsDir() {
 			IndexAllFiles(absFilePath, bufferChan)
 		} else {
 			enqueFile(fi, absFilePath, bufferChan)
 		}
 	}
 	return nil
-}
-
-func isDir(fi os.FileInfo) bool {
-	switch mode := fi.Mode(); {
-	case mode.IsDir():
-		return true
-	case mode.IsRegular():
-		return false
-	default:
-		return true
-	}
 }
 
 func getNumFiles(dir string) int {
