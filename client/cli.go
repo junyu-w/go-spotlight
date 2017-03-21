@@ -70,7 +70,7 @@ func executeStrictQuery(c *cli.Context) error {
 
 	query := compileQuery(timeRange, fileExtension, hint)
 
-	searchRequest := bleve.NewSearchRequest(query)
+	searchRequest := bleve.NewSearchRequestOptions(query, 10, 0, false)
 	searchRequest.Highlight = bleve.NewHighlightWithStyle("ansi")
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
@@ -94,7 +94,7 @@ func executeFuzzyQuery(c *cli.Context) error {
 	}
 	conjQuery := bleve.NewConjunctionQuery(queries...)
 
-	searchRequest := bleve.NewSearchRequest(conjQuery)
+	searchRequest := bleve.NewSearchRequestOptions(conjQuery, 10, 0, false)
 	searchRequest.Highlight = bleve.NewHighlightWithStyle("ansi")
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
