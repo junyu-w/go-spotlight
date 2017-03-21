@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	MetaJsonPath string = IndexDir + "fdb_meta.json"
+	MetaJsonPath string = IndexDir + "gsp_meta.json"
 )
 
 type IndexRecord map[string]string //`json:"index_record"`
@@ -89,7 +89,7 @@ func (ir IndexRecord) DirHasValidIndex(path string) (string, bool) {
 }
 
 func (ir IndexRecord) RemoveIndex(indexName string) error {
-	fmt.Println("cleaning old index...")
+	//fmt.Println("cleaning old index...")
 	err := os.RemoveAll(IndexDir + indexName)
 	if err != nil {
 		fmt.Println(err)

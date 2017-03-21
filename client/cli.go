@@ -28,21 +28,17 @@ func GetCliApp() *cli.App {
 			Usage:   "Search for files according to query input",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "keyword, k",
-					Value: "path",
-					Usage: "searching for file 'name' or file 'path'",
-				}, cli.StringFlag{
 					Name:  "time, t",
 					Value: "",
-					Usage: "date range for your search, eg. -3~0 means last 3 days",
+					Usage: "date range for your search, eg. -3~0 means last 3 days (mandatory field)",
 				}, cli.StringFlag{
 					Name:  "extension, ext",
 					Value: "",
-					Usage: "file extension to limit search ranges",
+					Usage: "file extension to limit search ranges (default empty)",
 				}, cli.StringFlag{
 					Name:  "words, w",
 					Value: "",
-					Usage: "Enter words you remember that you typed in this file",
+					Usage: "Enter words you remember that you typed in this file (default empty)",
 				},
 			},
 			Action: executeStrictQuery,
@@ -57,6 +53,14 @@ func GetCliApp() *cli.App {
 }
 
 func executeStrictQuery(c *cli.Context) error {
+	timeRange := c.String("time")
+	fileExtension := c.String("extension")
+	hint := c.String("words")
+	if timeRange == "" {
+		fmt.Println("Please check help with \"fdb help sq\"")
+		return nil
+	}
+
 	curDir, _ := os.Getwd()
 	fr_index, err := models.GetFrIndex(curDir)
 	if err != nil {
@@ -64,13 +68,6 @@ func executeStrictQuery(c *cli.Context) error {
 	}
 	defer fr_index.Close()
 
-	timeRange := c.String("time")
-	fileExtension := c.String("extension")
-	hint := c.String("words")
-	if timeRange == "" || fileExtension == "" || hint == "" {
-		fmt.Println("Please check help with \"fdb help sq\"")
-		return nil
-	}
 	query := compileQuery(timeRange, fileExtension, hint)
 
 	searchRequest := bleve.NewSearchRequest(query)
@@ -79,7 +76,7 @@ func executeStrictQuery(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(searchResult)
+	fmt.Println(formatSearchResult(searchResult))
 	return nil
 }
 
@@ -103,6 +100,6 @@ func executeFuzzyQuery(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(searchResult)
+	fmt.Println(formatSearchResult(searchResult))
 	return nil
 }
