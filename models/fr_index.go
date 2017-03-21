@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var IndexDir string = getHomeDir() + "/.fdb_idx/"
+var IndexDir string = getHomeDir() + "/.gsp_idx/"
 
 func getHomeDir() string {
 	user, err := user.Current()

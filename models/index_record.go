@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	MetaJsonPath string = IndexDir + "fdb_meta.json"
+	MetaJsonPath string = IndexDir + "gsp_meta.json"
 )
 
 type IndexRecord map[string]string //`json:"index_record"`
