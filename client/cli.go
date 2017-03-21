@@ -68,9 +68,9 @@ func executeStrictQuery(c *cli.Context) error {
 	}
 	defer fr_index.Close()
 
-	query := compileQuery(timeRange, fileExtension, hint)
+	q := compileQuery(timeRange, fileExtension, hint)
 
-	searchRequest := bleve.NewSearchRequestOptions(query, 10, 0, false)
+	searchRequest := bleve.NewSearchRequestOptions(q, 10, 0, false)
 	searchRequest.Highlight = bleve.NewHighlightWithStyle("ansi")
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
