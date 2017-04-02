@@ -70,13 +70,20 @@ func executeStrictQuery(c *cli.Context) error {
 
 	q := compileQuery(timeRange, fileExtension, hint)
 
-	searchRequest := bleve.NewSearchRequestOptions(q, 10, 0, false)
+	searchRequest := bleve.NewSearchRequestOptions(q, 500, 0, false)
 	searchRequest.Highlight = bleve.NewHighlightWithStyle("ansi")
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
 		return err
 	}
-	fmt.Println(formatSearchResult(searchResult))
+	var result string
+	if len(searchResult.Hits) > 5 {
+		result = formatSearchResult(searchResult, true)
+		pipeResultToPeco(result)
+	} else {
+		result = formatSearchResult(searchResult, false)
+		fmt.Printf(result)
+	}
 	return nil
 }
 
@@ -94,12 +101,19 @@ func executeFuzzyQuery(c *cli.Context) error {
 	}
 	conjQuery := bleve.NewConjunctionQuery(queries...)
 
-	searchRequest := bleve.NewSearchRequestOptions(conjQuery, 10, 0, false)
+	searchRequest := bleve.NewSearchRequestOptions(conjQuery, 500, 0, false)
 	searchRequest.Highlight = bleve.NewHighlightWithStyle("ansi")
 	searchResult, err := fr_index.Search(searchRequest)
 	if err != nil {
 		return err
 	}
-	fmt.Println(formatSearchResult(searchResult))
+	var result string
+	if len(searchResult.Hits) > 10 {
+		result = formatSearchResult(searchResult, true)
+		pipeResultToPeco(result)
+	} else {
+		result = formatSearchResult(searchResult, false)
+		fmt.Printf(result)
+	}
 	return nil
 }

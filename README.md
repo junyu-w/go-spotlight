@@ -6,6 +6,10 @@ Go Spotlight is a command-line file search engine that does automatic indexing, 
 
 And thanks to the power of *bleve*, `gsp` does query analysis before execution, such that the query term you input need not be super accurate (eg. water = watering = watered)
 
+### Required Software
+
+`brew install peco`
+
 ### Install
 
 if you have `go` installed and want to build from source
